@@ -14,3 +14,11 @@ There is also a blog article on this:
 http://tianshuohu.diandian.com/post/2012-06-08/Trello-Export-as-html
 
 Fork me at https://github.com/tianshuo/Trello
+
+
+# Installation
+
+- clone the repository
+- open index.html, and enter your key on the line <script type="text/javascript" src="https://api.trello.com/1/client.js?key="></script>
+- to generate a key, use https://trello.com/1/appKey/generate
+
