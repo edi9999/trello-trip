@@ -1,8 +1,6 @@
-// Okay I admit the code is ugly...
-if (typeof console === "undefined" || typeof console.log === "undefined") { //Fix IE window.console bug
- console = {};
- console.log = function() {};
-} 
+var showPrices=true;
+var conso_par_km;
+var prix_essence;
 
 $(document).ready(function(){
 	var defaultOptions = {
@@ -46,7 +44,8 @@ var router=function(){
 	if (hash!=="")
 	{
 		getBoard(hash);
-	}else {
+	}
+	else {
 		if(window.myself){
 			listBoards();
 		}else{
@@ -97,12 +96,55 @@ var getBoard=function(board){
 	$("#view").html("<h1>Loading ...OK!!</h1>");
 	window.doc=board; //debug
 	window.title=board.name;
-	_.each(board.cards,function(card){ //iterate on cards
+	var prixTotal=0;
+	_.each(board.cards,function(card,i){ //iterate on cards
 		if (card.idAttachmentCover!=null)
 		_.each(card.attachments,function(attachment){
 			attachment.cover= attachment.id===card.idAttachmentCover;
 		});
+		
+		if (card.name=="Configuration")
+		{
+			consommationRegex=new RegExp("\\*\\*ConsommationEssence\\*\\*: ([0-9]+) Litres/100km");
+			prixEssenceRegex =new RegExp("\\*\\*Essence\\*\\*: ([0-9\.]+) €/Litre");
+			coutsDiversRegex =new RegExp("\\*\\*CoutsDivers\\*\\*: ([0-9\.]+) €");
+			conso_par_km=parseFloat(consommationRegex.exec(card.desc)[1])/100;
+			prix_essence=parseFloat(prixEssenceRegex.exec(card.desc)[1]);
+			coutsDivers=parseFloat(coutsDiversRegex.exec(card.desc)[1]);
+			return;
+		}
+
+		adressRegex=new RegExp("\\*\\*Plan\\*\\*: (.*)");
+		if(adressRegex.test(card.desc))
+		{
+			var result=adressRegex.exec(card.desc);
+			card.adress=result[1];
+		}
+
+		card.map=true;
+		noMapRegex=new RegExp("\\*\\*NoMap\\*\\*");
+		if(noMapRegex.test(card.desc))
+		{
+			card.map=false;
+			card.desc=card.desc.replace(noMapRegex,"")
+		}
+
+		prixRegex=new RegExp("\\*\\*Prix\\*\\*: ([0-9]+) €");
+		if(prixRegex.test(card.desc))
+		{
+			var result=prixRegex.exec(card.desc);
+			if (showPrices==false)
+				card.desc=card.desc.replace(prixRegex,"")
+			prixTotal+=parseInt(result[1])
+		}
+		else
+		{
+			alert("Erreur prix");
+		}
+		card.num=i;
 	});//iterate on cards
+
+
 
 	// Second Init Cards
 	var listofcards=_.groupBy(board.cards, function(card){
@@ -113,7 +155,6 @@ var getBoard=function(board){
 		list.size=list.cards?list.cards.length:0;
 		list.show=(list.size>0);
 	});
-	console.log(board);
 
 	// Date function
 	board.formatDate=function(){
@@ -134,18 +175,45 @@ var getBoard=function(board){
 	board.formatComments=function(){
 		var converter = new Showdown.converter();
 		return converter.makeHtml;
-	};		
+	};
 	//
 	// Start Rendering
-	board.displayColumns=["Name","Description","Due Date","Checklists","Members","Labels","Votes"];
 	var htmltemplate;
 	$.ajax({url:"template.html",async:false,success:function(r){
 		htmltemplate=r;
 	}})
-	console.log(htmltemplate)
 	var csvtemplate="";//TODO
 
 	var str=Mustache.render(htmltemplate,board);
 	$("#view").html(str);
+
+	var lastCard=null;
+	var numMaps=0;
+	_.each(board.cards,function(card){
+
+		if (lastCard!=null && card.map)
+	{
+		numMaps++;
+		TrelloMapService.addMap("map-"+card.num,lastCard.adress,card.adress,"map-desc-"+card.num,function () {
+			numMaps--;
+			if (numMaps==0)
+				{
+					coutEssence=metreTotals/1000*conso_par_km*prix_essence;
+
+					prixTotal+=coutEssence;
+					prixTotal+=coutsDivers;
+					if (showPrices)
+					{
+						$("#essenceprice").text("Cout essence:"+coutEssence+" €")
+						$("#diversprice").text("Cout divers:"+coutsDivers +" €")
+						$("#totalprice").text("Prix total:"+prixTotal +" €")
+					}
+				}
+		});
+	}
+
+		lastCard=card;
+	});
+
 	});
 };

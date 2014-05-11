@@ -2,8 +2,21 @@
       {{#cards}}
       		<div class="card">
          	 	 <h1>{{name}}</h1>
-         	 	 {{#attachments}} {{#cover}} <br> <img src='{{url}}' alt=''>{{/cover}} {{/attachments}}
-            	<div class='comments'>{{#formatComments}}{{desc}}{{/formatComments}}{{#attachments}} {{^cover}} <br> <img src='{{url}}' alt=''>{{/cover}} {{/attachments}}</div>
+         	 	 {{#attachments}} 
+         	 	 	{{#cover}} <br> <img src='{{url}}' width="400px">{{/cover}} 
+         	 	 {{/attachments}}
+         	 	 {{#map}}
+         	 	 <div id="map-{{num}}" class="map"></div>
+         	 	 <div id="map-desc-{{num}}" class="map-desc"></div>
+         	 	 {{/map}}
+            	<div class='comments'>
+            		{{#formatComments}}{{desc}}{{/formatComments}}
+            		{{#attachments}} 
+            			{{^cover}}
+            			<br> <img src='{{url}}' width="300px">
+            			{{/cover}} 
+            		{{/attachments}}
+            	</div>
 			</div>
       {{/cards}}
 {{/lists}}
