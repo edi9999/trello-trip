@@ -102,40 +102,6 @@ var getBoard=function(board){
 		_.each(card.attachments,function(attachment){
 			attachment.cover= attachment.id===card.idAttachmentCover;
 		});
-		_.each(card.idChecklists,function(listId){ //iterate on checklists
-			var list=_.find(board.checklists,function(check){ //Find list
-				return check.id==listId;
-				});
-			if(!list){
-				console.log("ERROR:"+listId+" not found");
-				return;
-			}
-			list.doneNumber=0;
-			list.totalNumber=list.checkItems.length || 0;
-			_.each(list.checkItems,function(item){ //Check complete
-				item.complete=_.find(card.checkItemStates, function(state){
-					if (state.idCheckItem==item.id&&state.state=="complete")
-					{
-						list.doneNumber++;
-						return true;
-					}
-					return false;
-				});
-			});
-			list.done=(list.doneNumber==list.totalNumber);
-			var template="<div><b>{{name}}</b> <span class='show right {{#done}}green{{/done}}'>{{doneNumber}}/{{totalNumber}}</span></div><ul>{{#checkItems}}<li>{{#complete}}<del>{{/complete}}{{name}}{{#complete}}</del>{{/complete}}</li>{{/checkItems}}</ul>";
-			var str=Mustache.render(template,list);
-
-			card.checklist=card.checklist||[]; //Make array
-			card.checklist.push(str);
-		});//iterate on checklists
-
-		card.members=_.map(card.idMembers,function(id){ // iterate on members
-			var member=_.find(board.members, function(m) {
-				return m.id==id;
-			});
-			return member.username;
-		});// iterate on members
 	});//iterate on cards
 
 	// Second Init Cards
@@ -181,33 +147,5 @@ var getBoard=function(board){
 
 	var str=Mustache.render(htmltemplate,board);
 	$("#view").html(str);
-
-	// Download Button
-	var download="<!DOCTYPE html><html><head><meta charset='utf-8' /><title>"+board.name+"</title><style>"+$("style").text()+"</style></head><body>"+str+"</body></html>";
-//this may work for firefox using application/data
-//location.href="data:text/html;charset=utf-8,"+encodeURIComponent(download);
-	var button1=$("#download");
-	button1.addClass("downloader");
-	button1.text("Save HTML");
-	button1.click(function(){
-		console.log("saving..");
-		var bb=new BlobBuilder();
-		bb.append(download);
-		var filesaver=saveAs(bb.getBlob("text/html;charset=utf-8"),board.name+"_"+board.formatDate()('now')+".html");
-	});
-		var button2=$("#trello-link");
-	button2.addClass("downloader");
-	button2.text("Trello");
-	button2.click(function(){
-		location=board.url;
-	});
-	var button3=$("#printme");
-	button3.addClass("downloader");
-	button3.text("Print");
-	button3.click(function(){
-		print();
-	});
-
-	//button.click(function(){location.href="data:text/html;charset=utf-8,"+encodeURIComponent(download);});
 	});
 };
