@@ -93,11 +93,15 @@ var listBoards=function(){
 var getBoard=function(board){
   $("#view").empty();
   $("#view").html("<h1>Loading ...</h1>");
-  Trello.get("/boards/"+board,{cards:"open",lists:"open",checklists:"all",members:"all"},function(board){
+  Trello.get("/boards/"+board,{cards:"open",lists:"open",checklists:"all",members:"all",card_attachments:true},function(board){
 	$("#view").html("<h1>Loading ...OK!!</h1>");
 	window.doc=board; //debug
 	window.title=board.name;
 	_.each(board.cards,function(card){ //iterate on cards
+		if (card.idAttachmentCover!=null)
+		_.each(card.attachments,function(attachment){
+			attachment.cover= attachment.id===card.idAttachmentCover;
+		});
 		_.each(card.idChecklists,function(listId){ //iterate on checklists
 			var list=_.find(board.checklists,function(check){ //Find list
 				return check.id==listId;
@@ -168,7 +172,7 @@ var getBoard=function(board){
 	//
 	// Start Rendering
 	board.displayColumns=["Name","Description","Due Date","Checklists","Members","Labels","Votes"];
-	var htmltemplate="<h1><span id='download'></span><span id='trello-link'></span><span id='printme'></span>{{name}} <span class='right'>{{#formatDate}}now{{/formatDate}}</span></h1>{{#lists}}<table><caption><h2>{{name}} <span class='show right'>{{size}}</span></h2></caption>{{#show}}<col width='20%' /><col width='30%' /><col width='5%' /><col width='25%' /><col width='5%' /><col width='10%' /><col width='5%' /><thead><tr>{{#displayColumns}}<th scope='col'>{{.}}</th>{{/displayColumns}}</tr></thead>{{/show}}<tbody>{{#cards}}<tr><td scope='row'><b>{{name}}</b></td><td><div class='comments'>{{#formatComments}}{{desc}}{{/formatComments}}</div></td><td>{{#formatDate}}{{due}}{{/formatDate}}</td><td>{{#checklist}}<div>{{{.}}}</div>{{/checklist}}</td><td>{{#members}}<div>{{.}}</div>{{/members}}</td><td>{{#labels}}<div class='show {{color}}'>{{name}}&nbsp;</div>{{/labels}}</td><td>{{badges.votes}}</td></tr>{{/cards}}</tbody></table>{{/lists}}";
+	var htmltemplate="<h1><span id='download'></span><span id='trello-link'></span><span id='printme'></span>{{name}} <span class='right'>{{#formatDate}}now{{/formatDate}}</span></h1>{{#lists}}<table><caption><h2>{{name}} <span class='show right'>{{size}}</span></h2></caption>{{#show}}<col width='20%' /><col width='30%' /><col width='5%' /><col width='25%' /><col width='5%' /><col width='10%' /><col width='5%' /><thead><tr>{{#displayColumns}}<th scope='col'>{{.}}</th>{{/displayColumns}}</tr></thead>{{/show}}<tbody>{{#cards}}<tr><td scope='row'><b>{{name}} {{#attachments}} {{#cover}} <br> <img src='{{url}}' alt=''>{{/cover}} {{/attachments}}</b></td><td><div class='comments'>{{#formatComments}}{{desc}}{{/formatComments}}{{#attachments}} {{^cover}} <br> <img src='{{url}}' alt=''>{{/cover}} {{/attachments}}</div></td><td>{{#formatDate}}{{due}}{{/formatDate}}</td><td>{{#checklist}}<div>{{{.}}}</div>{{/checklist}}</td><td>{{#members}}<div>{{.}}</div>{{/members}}</td><td>{{#labels}}<div class='show {{color}}'>{{name}}&nbsp;</div>{{/labels}}</td><td>{{badges.votes}}</td></tr>{{/cards}}</tbody></table>{{/lists}}";
 	var csvtemplate="";//TODO
 
 	var str=Mustache.render(htmltemplate,board);
