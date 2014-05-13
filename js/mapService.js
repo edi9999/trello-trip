@@ -6,7 +6,10 @@ secondesTotals=0;
 	console.log("trello mapservice")
 	var TrelloMapService={};
 
-	TrelloMapService.addMap=function(id,start,end,descId,callback){
+	TrelloMapService.addMap=function(id,start,end,descId,callback,waypoints){
+
+		if (waypoints==null || waypoints==undefined)
+			waypoints=[];
 
 		var directionsDisplay;
 		var directionsService = new google.maps.DirectionsService();
@@ -24,6 +27,7 @@ secondesTotals=0;
   	  	  var request = {
       	  	  origin:start,
       	  	  destination:end,
+			  waypoints:waypoints,
       	  	  travelMode: google.maps.TravelMode.DRIVING
   	  	  };
   	  	  directionsService.route(request, function(response, status) {

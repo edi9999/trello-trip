@@ -86,7 +86,6 @@ var listBoards=function(){
 	$("#boardlist").masonry({
 		itemSelector:'.list'
 	});
-
 };
 
 var getBoard=function(board){
@@ -98,10 +97,12 @@ var getBoard=function(board){
 	window.title=board.name;
 	var prixTotal=0;
 	_.each(board.cards,function(card,i){ //iterate on cards
+
 		if (card.idAttachmentCover!=null)
-		_.each(card.attachments,function(attachment){
-			attachment.cover= attachment.id===card.idAttachmentCover;
-		});
+			_.each(card.attachments,function(attachment){
+				attachment.hotel=attachment.name.substr(0,5)=="hotel"
+				attachment.cover= attachment.id===card.idAttachmentCover;
+			});
 		
 		if (card.name=="Configuration")
 		{
@@ -111,6 +112,7 @@ var getBoard=function(board){
 			conso_par_km=parseFloat(consommationRegex.exec(card.desc)[1])/100;
 			prix_essence=parseFloat(prixEssenceRegex.exec(card.desc)[1]);
 			coutsDivers=parseFloat(coutsDiversRegex.exec(card.desc)[1]);
+			board.cards.splice(i,1)
 			return;
 		}
 
@@ -189,31 +191,36 @@ var getBoard=function(board){
 
 	var lastCard=null;
 	var numMaps=0;
+	var firstCard=0;
 	_.each(board.cards,function(card){
-
-		if (lastCard!=null && card.map)
-	{
-		numMaps++;
-		TrelloMapService.addMap("map-"+card.num,lastCard.adress,card.adress,"map-desc-"+card.num,function () {
-			numMaps--;
-			if (numMaps==0)
-				{
-					coutEssence=metreTotals/1000*conso_par_km*prix_essence;
-
-					prixTotal+=coutEssence;
-					prixTotal+=coutsDivers;
-					if (showPrices)
+	waypoints=[];
+	if (lastCard!=null && card.map)
+		{
+			if (firstCard===0)
+				firstCard=card;
+			numMaps++;
+			waypoints.push({ location:card.adress, stopover:true});
+			TrelloMapService.addMap("map-"+card.num,lastCard.adress,card.adress,"map-desc-"+card.num,function () {
+				numMaps--;
+				if (numMaps==0)
 					{
-						$("#essenceprice").text("Cout essence:"+coutEssence+" €")
-						$("#diversprice").text("Cout divers:"+coutsDivers +" €")
-						$("#totalprice").text("Prix total:"+prixTotal +" €")
-					}
-				}
-		});
-	}
+						coutEssence=parseInt(metreTotals/1000*conso_par_km*prix_essence);
 
+						prixTotal+=coutEssence;
+						prixTotal+=coutsDivers;
+						if (showPrices)
+						{
+							$("#essenceprice").text("Cout essence:"+coutEssence+" € ="+(metreTotals/1000)+"km x "+conso_par_km+"L/km * "+prix_essence+" € /L  ---  "+parseInt(secondesTotals/3600)+" heures de routes");
+							$("#diversprice").text("Cout divers:"+coutsDivers +" €")
+							$("#totalprice").text("Prix total:"+prixTotal +" €")
+						}
+					}
+			});
+		}
 		lastCard=card;
 	});
+
+	TrelloMapService.addMap("map-total",firstCard,lastCard,"map-desc-total",function(){console.log("done")},waypoints);
 
 	});
 };

@@ -65,8 +65,11 @@ box-shadow: 5px 0 4px -4px rgba(0,0,0,0.3);
 
 .map
 { 
-	height:400px;
-	width:400px;
+	vertical-align:top;
+	display:inline-block;
+	height:300px;
+	width:300px;
+	margin-left:30px;
 }
 
 thead {

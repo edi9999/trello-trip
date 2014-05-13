@@ -1,19 +1,31 @@
+<div id="map-total" class="map"></div>
+<span id="map-desc-total" class="map-desc"></span>
+
 {{#lists}}
       {{#cards}}
       		<div class="card">
          	 	 <h1>{{name}}</h1>
          	 	 {{#attachments}} 
-         	 	 	{{#cover}} <br> <img src='{{url}}' width="400px">{{/cover}} 
+         	 	 	{{#cover}} <br> <img src='{{url}}' width="300px">{{/cover}} 
          	 	 {{/attachments}}
          	 	 {{#map}}
          	 	 <div id="map-{{num}}" class="map"></div>
-         	 	 <div id="map-desc-{{num}}" class="map-desc"></div>
+         	 	 <br>
+         	 	 <span id="map-desc-{{num}}" class="map-desc"></span>
          	 	 {{/map}}
             	<div class='comments'>
+            		{{#attachments}} 
+            			{{#hotel}}
+            			<img src='{{url}}' style="float:right;" width="240px">
+            			{{/hotel}}
+            		{{/attachments}}
+
             		{{#formatComments}}{{desc}}{{/formatComments}}
             		{{#attachments}} 
             			{{^cover}}
-            			<br> <img src='{{url}}' width="300px">
+            			{{^hotel}}
+            			<br> <img src='{{url}}' width="240px">
+            			{{/hotel}}
             			{{/cover}} 
             		{{/attachments}}
             	</div>
