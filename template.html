@@ -1,8 +1,12 @@
+<h1> Résumé du voyage {{board.name}} </h1>
+
+
 <div id="map-total" class="map"></div>
 <span id="map-desc-total" class="map-desc"></span>
 
 {{#lists}}
       {{#cards}}
+      {{#show}}
       		<div class="card">
          	 	 <h1>{{name}}</h1>
          	 	 {{#attachments}} 
@@ -30,5 +34,6 @@
             		{{/attachments}}
             	</div>
 			</div>
+      {{/show}}
       {{/cards}}
 {{/lists}}

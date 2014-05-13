@@ -1,19 +1,25 @@
-Trello2HTML
+Trello-trip
 ===
 
-You can view detailed Trello Boards and export them to HTML (Save Page doesn't
-work). An ideal use for this is to generate and print weekly/monthly reports (at
-least that is how our team uses it.) Another use of this app is to directly 
-append a board id to the hash, for example, the report for the official Trello
-Development is http://tianshuo.github.com/trello/#4d5ea62fd76aa1136000000c
+I wanted to have a simple yet powerful solution to plan your next trip. I didn't want to code a lot of my own, and started using trello without anything else. I put every place I wanted to go in a specific card and attached photo and a description of what you can do there.
 
-The hosted version is on http://tianshuo.github.com/trello/ At the present moment,
-only Chrome is supported. (I haven't tested firefox yet)
+Then I thought maybe I could create a tag with the price of the hotel I will have to pay, and calculate the total price with an API.
 
-There is also a blog article on this: 
-http://tianshuohu.diandian.com/post/2012-06-08/Trello-Export-as-html
+So you have to put on every of your card:
 
-Fork me at https://github.com/tianshuo/Trello
+```
+**Prix**: 50 €
+```
+
+The 50 is arbitrary, but all other symbols matter (even the spaces)
+
+Because I wanted to have google maps previews of the trips I had to take, I also invented this tag:
+
+```
+**Plan**: Adress
+```
+
+This will then draw out the map of the trip from one location to the next
 
 
 # Installation

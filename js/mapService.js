@@ -24,6 +24,7 @@ secondesTotals=0;
   	  	  map = new google.maps.Map(document.getElementById(id), mapOptions);
   	  	  directionsDisplay.setMap(map);
 
+		  console.log(start,end,waypoints)
   	  	  var request = {
       	  	  origin:start,
       	  	  destination:end,
@@ -33,7 +34,8 @@ secondesTotals=0;
   	  	  directionsService.route(request, function(response, status) {
 			  var desc=document.getElementById(descId);
 		  		var routeInfo=response.routes[0].legs[0];
-		  	  desc.innerHTML=routeInfo.distance.text+"..."+routeInfo.duration.text;
+				if (desc!=null && desc!=undefined)
+		  	  	  	  desc.innerHTML=routeInfo.distance.text+"..."+routeInfo.duration.text;
 				metreTotals+=routeInfo.distance.value;
 				secondesTotals+=routeInfo.duration.value;
     		if (status == google.maps.DirectionsStatus.OK) {

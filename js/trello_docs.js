@@ -1,4 +1,4 @@
-var showPrices=true;
+var showPrices=false;
 var conso_par_km;
 var prix_essence;
 
@@ -97,6 +97,7 @@ var getBoard=function(board){
 	window.title=board.name;
 	var prixTotal=0;
 	_.each(board.cards,function(card,i){ //iterate on cards
+			card.show=true;
 
 		if (card.idAttachmentCover!=null)
 			_.each(card.attachments,function(attachment){
@@ -109,10 +110,10 @@ var getBoard=function(board){
 			consommationRegex=new RegExp("\\*\\*ConsommationEssence\\*\\*: ([0-9]+) Litres/100km");
 			prixEssenceRegex =new RegExp("\\*\\*Essence\\*\\*: ([0-9\.]+) €/Litre");
 			coutsDiversRegex =new RegExp("\\*\\*CoutsDivers\\*\\*: ([0-9\.]+) €");
+			card.show=false;
 			conso_par_km=parseFloat(consommationRegex.exec(card.desc)[1])/100;
 			prix_essence=parseFloat(prixEssenceRegex.exec(card.desc)[1]);
 			coutsDivers=parseFloat(coutsDiversRegex.exec(card.desc)[1]);
-			board.cards.splice(i,1)
 			return;
 		}
 
@@ -131,6 +132,7 @@ var getBoard=function(board){
 			card.desc=card.desc.replace(noMapRegex,"")
 		}
 
+		console.log ( card.desc);
 		prixRegex=new RegExp("\\*\\*Prix\\*\\*: ([0-9]+) €");
 		if(prixRegex.test(card.desc))
 		{
@@ -192,12 +194,13 @@ var getBoard=function(board){
 	var lastCard=null;
 	var numMaps=0;
 	var firstCard=0;
-	_.each(board.cards,function(card){
 	waypoints=[];
+	_.each(board.cards,function(card){
 	if (lastCard!=null && card.map)
 		{
 			if (firstCard===0)
 				firstCard=card;
+			latestCard=card;
 			numMaps++;
 			waypoints.push({ location:card.adress, stopover:true});
 			TrelloMapService.addMap("map-"+card.num,lastCard.adress,card.adress,"map-desc-"+card.num,function () {
@@ -220,7 +223,7 @@ var getBoard=function(board){
 		lastCard=card;
 	});
 
-	TrelloMapService.addMap("map-total",firstCard,lastCard,"map-desc-total",function(){console.log("done")},waypoints);
+	TrelloMapService.addMap("map-total",firstCard.adress,latestCard.adress,null,function(){console.log("done")},waypoints);
 
 	});
 };
