@@ -1,4 +1,4 @@
-var showPrices=false;
+var showPrices=true;
 var conso_par_km;
 var prix_essence;
 
@@ -123,6 +123,27 @@ var getBoard=function(board){
 			var result=adressRegex.exec(card.desc);
 			card.adress=result[1];
 		}
+
+		petitDejRegex=new RegExp("\\*\\*PetitDej\\*\\*");
+		if(petitDejRegex.test(card.desc))
+		{
+			card.desc=card.desc.replace(petitDejRegex,"![Image](http://clp.beequick.fr/img/icons/366.png)")
+		}
+
+		parkingRegex=new RegExp("\\*\\*Parking\\*\\*");
+		if(parkingRegex.test(card.desc))
+		{
+			card.desc=card.desc.replace(parkingRegex,"![Image](http://clp.beequick.fr/img/icons/494.png)")
+		}
+
+		commentsRegex=/(?:\/\*(?:[\s\S]*?)\*\/)|(?:([\s;])+\/\/(?:.*)$)/gm
+		card.desc=card.desc.replace(commentsRegex,"");
+
+		var urlRegex = /(http|ftp|https):\/\/[\w-]+(\.[\w-]+)+([\w.,@?^=%&amp;:\/~+#-]*[\w@?^=%&amp;\/~+#-])?/
+		card.desc=card.desc.replace(urlRegex,function($0){
+			return "["+$0+"]"+"("+$0+")";
+		})
+
 
 		card.map=true;
 		noMapRegex=new RegExp("\\*\\*NoMap\\*\\*");
