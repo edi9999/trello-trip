@@ -20,7 +20,7 @@ $(document).ready(function(){
     if (!Trello.authorized()) {
         return Trello.authorize(defaultOptions);
     }
-    
+
 	$(window).bind("hashchange",router);
 });
 
@@ -104,7 +104,7 @@ var getBoard=function(board){
 				attachment.hotel=attachment.name.substr(0,5)=="hotel"
 				attachment.cover= attachment.id===card.idAttachmentCover;
 			});
-		
+
 		if (card.name=="Configuration")
 		{
 			consommationRegex=new RegExp("\\*\\*ConsommationEssence\\*\\*: ([0-9]+) Litres/100km");
@@ -153,7 +153,6 @@ var getBoard=function(board){
 			card.desc=card.desc.replace(noMapRegex,"")
 		}
 
-		console.log ( card.desc);
 		prixRegex=new RegExp("\\*\\*Prix\\*\\*: ([0-9]+) €");
 		if(prixRegex.test(card.desc))
 		{

@@ -24,7 +24,6 @@ secondesTotals=0;
   	  	  map = new google.maps.Map(document.getElementById(id), mapOptions);
   	  	  directionsDisplay.setMap(map);
 
-		  console.log(start,end,waypoints)
   	  	  var request = {
       	  	  origin:start,
       	  	  destination:end,
@@ -32,6 +31,12 @@ secondesTotals=0;
       	  	  travelMode: google.maps.TravelMode.DRIVING
   	  	  };
   	  	  directionsService.route(request, function(response, status) {
+              console.log(response)
+              if(status=="NOT_FOUND")
+                  {
+                      console.log(request)
+                    throw new Error("not found for ")
+                  }
 			  var desc=document.getElementById(descId);
 		  		var routeInfo=response.routes[0].legs[0];
 				if (desc!=null && desc!=undefined)
