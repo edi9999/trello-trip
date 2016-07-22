@@ -88,6 +88,8 @@ var listBoards=function(){
 	});
 };
 
+var mainCard=null;
+
 var getBoard=function(board){
   $("#view").empty();
   $("#view").html("<h1>Loading ...</h1>");
@@ -116,6 +118,11 @@ var getBoard=function(board){
 			coutsDivers=parseFloat(coutsDiversRegex.exec(card.desc)[1]);
 			return;
 		}
+
+        mainHomeRegex=new RegExp("\\*\\*Home\\*\\*");
+		if(mainHomeRegex.test(card.desc)) {
+            mainCard=card;
+        }
 
 		adressRegex=new RegExp("\\*\\*Plan\\*\\*: (.*)");
 		if(adressRegex.test(card.desc))
@@ -215,15 +222,7 @@ var getBoard=function(board){
 	var numMaps=0;
 	var firstCard=0;
 	waypoints=[];
-	_.each(board.cards,function(card){
-	if (lastCard!=null && card.map)
-		{
-			if (firstCard===0)
-				firstCard=card;
-			latestCard=card;
-			numMaps++;
-			waypoints.push({ location:card.adress, stopover:true});
-			TrelloMapService.addMap("map-"+card.num,lastCard.adress,card.adress,"map-desc-"+card.num,function () {
+    addCardCb=function () {
 				numMaps--;
 				if (numMaps==0)
 					{
@@ -238,7 +237,24 @@ var getBoard=function(board){
 							$("#totalprice").text("Prix total:"+prixTotal +" €")
 						}
 					}
-			});
+			}
+
+	_.each(board.cards,function(card){
+	if (lastCard!=null && card.map)
+		{
+			if (firstCard===0)
+				firstCard=card;
+			latestCard=card;
+			numMaps++;
+			waypoints.push({ location:card.adress, stopover:true});
+            if (mainCard===null)
+                TrelloMapService.addMap("map-"+card.num,lastCard.adress,card.adress,"map-desc-"+card.num,addCardCb);
+            else{
+                if (card.adress!=mainCard.adress)
+                {
+                    TrelloMapService.addMap("map-"+card.num,mainCard.adress,card.adress,"map-desc-"+card.num,addCardCb);
+                }
+            }
 		}
 		lastCard=card;
 	});
