@@ -8,7 +8,7 @@ secondesTotals=0;
 
     TrelloMapService.addMap=function(id,start,end,descId,callback,waypoints){
 
-        if (waypoints==null || waypoints==undefined)
+        if (waypoints==null)
             waypoints=[];
 
         var directionsDisplay;
@@ -30,23 +30,29 @@ secondesTotals=0;
             waypoints:waypoints,
             travelMode: google.maps.TravelMode.DRIVING
         };
+        if (!start) {
+            console.log({id,start,end});
+            throw new Error("No startpoint");
+        }
+        if (!end) {
+            throw new Error("No endpoint");
+        }
         directionsService.route(request, function(response, status) {
             console.log(response)
-            if(status=="NOT_FOUND")
-                {
-                    console.log(request)
-                    throw new Error("not found for ")
-                }
-                var desc=document.getElementById(descId);
-                var routeInfo=response.routes[0].legs[0];
-                if (desc!=null && desc!=undefined)
-                    desc.innerHTML=routeInfo.distance.text+"..."+routeInfo.duration.text;
-                metreTotals+=routeInfo.distance.value;
-                secondesTotals+=routeInfo.duration.value;
-                if (status == google.maps.DirectionsStatus.OK) {
-                    directionsDisplay.setDirections(response);
-                    callback()
-                }
+            if(status=="NOT_FOUND") {
+                console.log(request);
+                throw new Error("Adress not found : '" + request.destination + "'");
+            }
+            var desc=document.getElementById(descId);
+            var routeInfo=response.routes[0].legs[0];
+            if (desc!=null && desc!=undefined)
+                desc.innerHTML=routeInfo.distance.text+"..."+routeInfo.duration.text;
+            metreTotals+=routeInfo.distance.value;
+            secondesTotals+=routeInfo.duration.value;
+            if (status == google.maps.DirectionsStatus.OK) {
+                directionsDisplay.setDirections(response);
+                callback()
+            }
         });
     }
     this.TrelloMapService=TrelloMapService;
