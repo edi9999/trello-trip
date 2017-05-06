@@ -1,13 +1,11 @@
-metreTotals=0;
-secondesTotals=0;
-
 !function()
 {
+    var metreTotals=0;
+    var secondesTotals=0;
     console.log("trello mapservice")
     var TrelloMapService={};
 
     TrelloMapService.addMap=function(id,start,end,descId,callback,waypoints){
-
         if (waypoints==null)
             waypoints=[];
 
@@ -53,7 +51,7 @@ secondesTotals=0;
                 directionsDisplay.setDirections(response);
                 callback()
             }
-        });
-    }
+		});
+	}
     this.TrelloMapService=TrelloMapService;
 }()
